@@ -24,15 +24,15 @@ export default function Login() {
   
   function loginHandler(event) {
     if(id !== user.id) {
-      console.log("존재하지 않는 아이디입니다.");
+      alert("존재하지 않는 아이디입니다.");
       return;
     }
 
     if(password !== user.password) {
-      console.log("잘못된 비밀번호를 입력하셨습니다.");
+      alert("잘못된 비밀번호를 입력하셨습니다.");
       return;
     }
-    dispatch(authActions.LOGIN());
+      dispatch(authActions.LOGIN());
   }
 
   function logoutHandler() {
