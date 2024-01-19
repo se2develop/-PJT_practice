@@ -1,13 +1,25 @@
-import React, { useState, useEffect, useCallback, Fragment } from "react";
-import { GoogleMap, useJsApiLoader, MarkerF } from "@react-google-maps/api";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  Fragment,
+} from "react";
+import {
+  GoogleMap,
+  useJsApiLoader,
+  MarkerF,
+  DirectionsRenderer,
+  DirectionsService,
+} from "@react-google-maps/api";
 import SearchBox from "./SearchBox";
 import Directions from "./Directions";
 
 const libraries = ["places"];
 
 const MyMap = (props) => {
-  const containerStyle = { 
-    width: "800px", 
+  const containerStyle = {
+    width: "800px",
     height: "650px",
   };
 
@@ -38,8 +50,10 @@ const MyMap = (props) => {
   //   { name:'이태원', lat:37.540223, lng:126.994005}
   // ]);
 
-  const [map, setMap] = useState('');
+  const [map, setMap] = useState("");
   const [markers, setMarkers] = useState([]);
+  const [distance, setDistance] = useState("");
+  const [duration, setDuration] = useState("");
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -53,7 +67,8 @@ const MyMap = (props) => {
       map.fitBounds(bounds);
 
       setMap(map);
-    }, [center]
+    },
+    [center]
   );
 
   const onUnmount = useCallback(function callback(map) {
@@ -62,17 +77,25 @@ const MyMap = (props) => {
 
   const handlePlaceSelected = useCallback(
     (place) => {
-      const newMarkers = [...markers, { position: place, label: String(markers.length + 1) },];
+      const newMarkers = [
+        ...markers,
+        { position: place, label: String(markers.length + 1) },
+      ];
       setMarkers(newMarkers);
-    }, [markers]
+    },
+    [markers]
   );
 
   const calculateDistance = (p1, p2) => {
     const R = 6378137;
     const dLat = (p2.lat - p1.lat) * (Math.PI / 180);
     const dLong = (p2.lng - p1.lng) * (Math.PI / 180);
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos((p1.lat * Math.PI) / 180) *
-        Math.cos((p2.lat * Math.PI) / 180) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((p1.lat * Math.PI) / 180) *
+        Math.cos((p2.lat * Math.PI) / 180) *
+        Math.sin(dLong / 2) *
+        Math.sin(dLong / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const d = R * c;
     return d;
@@ -80,7 +103,10 @@ const MyMap = (props) => {
 
   // 거리를 계산한 마커들을 정렬해서 저장
   const sortedMarkers = markers
-    .map((marker) => ({...marker, distance: calculateDistance(center, marker.position),}))
+    .map((marker) => ({
+      ...marker,
+      distance: calculateDistance(center, marker.position),
+    }))
     .sort((a, b) => a.distance - b.distance);
 
   useEffect(() => {
@@ -112,16 +138,16 @@ const MyMap = (props) => {
           />
         ))}
         {markers.length >= 2 && (
-          <Fragment>
-            {sortedMarkers.slice(0, -1).map((marker, index) => (
-              <Directions
-                key={index}
-                origin={sortedMarkers[index].position}
-                destination={sortedMarkers[index + 1].position}
-              />
-             ))}
-         </Fragment>
-        )}
+  <>
+    {sortedMarkers.slice(0, -1).map((marker, index) => (
+      <Directions
+        key={index}
+        origin={sortedMarkers[index].position}
+        destination={sortedMarkers[index + 1].position}
+      />
+    ))}
+  </>
+)}
       </GoogleMap>
     </Fragment>
   ) : null;
