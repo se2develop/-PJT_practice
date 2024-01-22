@@ -14,9 +14,10 @@ const SearchBox = ({ map, onPlaceSelected }) => {
       const selectedPlace = places[0];
       const lat = selectedPlace.geometry.location.lat();
       const lng = selectedPlace.geometry.location.lng();
+      const placeId = selectedPlace.place_id;
 
-      setSelectedPlaces((prevPlaces) => [...prevPlaces, { lat, lng }]);
-      onPlaceSelected({ lat, lng });
+      setSelectedPlaces((prevPlaces) => [...prevPlaces, { lat, lng, placeId }]);
+      onPlaceSelected({ lat, lng, placeId });
     }
     if (input.current) {
       input.current.value = "";
