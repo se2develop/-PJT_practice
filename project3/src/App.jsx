@@ -1,10 +1,10 @@
 import { Fragment } from 'react';
-import Map from './components/Map.jsx';
+import Places from './components/Places.jsx';
 
 function App() {
   return (
     <Fragment>
-      <Map />
+      <Places />
     </Fragment>
   );
 }
