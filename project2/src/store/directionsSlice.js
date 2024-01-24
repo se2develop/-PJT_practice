@@ -5,7 +5,7 @@ const directionsSlice = createSlice({
   initialState: [],
   reducers: {
     addDirections: (state, action) => {
-      const { startAddress, endAddress, distance, duration } = action.payload;
+      const { startAddress, endAddress, distance, duration, weekdayText } = action.payload;
       return [
         ...state,
         {
@@ -13,6 +13,7 @@ const directionsSlice = createSlice({
           endAddress: endAddress,
           distance: distance,
           duration: duration,
+          weekdayText: weekdayText,
         }
       ];
     },

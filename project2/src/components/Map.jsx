@@ -116,42 +116,53 @@ const Map = (props) => {
           position: place,
           label: String(markers.length + 1),
           placeId: place.placeId,
-          businessStatus: place.businessStatus,
         },
       ];
 
       setMarkers(newMarkers);
-    // Places API로 세부 정보 요청
+
+  // Places API로 세부 정보 요청
+  const placesService = new window.google.maps.places.PlacesService(map);
+
   const request = {
     placeId: place.placeId,
-    fields: ["name", "formatted_address", "geometry", "business_status", "rating", "photos", "url", "opening_hours"],
+    fields: ["name", "photos", "business_status", "formatted_address", "geometry", "icon", "rating", "opening_hours", "url"],
   };
 
-  const placesService = new window.google.maps.places.PlacesService(map);
+  const placeResult = {
+    name: '',
+    photo: '',
+    businessStatus: '',
+    formattedAddress: '',
+    icon: '',
+    rating: '',
+    weekdayText: [],
+    url: '',
+  };
 
   placesService.getDetails(request, (result, status) => {
     if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-      console.log("Place details:", result);
-      
-      // 사진이 있는 경우
-      if (result.photos && result.photos.length > 0) {
-        const photo = result.photos[1];
-        const photoOptions = {
-          maxHeight: 200,
-          maxWidth: 200,
-        };
+  
+    placeResult.name = result.name;
+    placeResult.photo = result.photos && result.photos.length > 0 ? result.photos[1].getUrl({ maxHeight: 200, maxWidth: 200 }) : null;
+    placeResult.businessStatus = result.business_status;
+    placeResult.formattedAddress = result.formatted_address;
+    placeResult.icon = result.icon;
+    placeResult.rating = result.rating;
+    placeResult.icon = result.icon;
+    placeResult.url = result.url;
+  
+    if (result.opening_hours && result.opening_hours.weekday_text) {
+      placeResult.weekdayText = result.opening_hours.weekday_text
+    };
 
-        // 이미지 URL을 얻어옴
-        const imageUrl = photo.getUrl(photoOptions);
+    console.log(placeResult.weekdayText);
 
-        // 여기에서 imageUrl을 사용하여 필요한 작업 수행
-        console.log("Photo URL:", imageUrl);
-      }
     } else {
       console.error("Error fetching place details:", status);
     }
 
-    dispatch(placesActions.setSearchResults(result));
+    dispatch(placesActions.setSearchResults(placeResult));
   });
 
 }, [markers, map]);
